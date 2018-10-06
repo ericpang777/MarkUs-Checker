@@ -2,16 +2,15 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import six, base64
+from selenium.webdriver.firefox.options import Options
 
 file = open('config.txt', 'r', encoding='utf-8')
 USERNAME = file.readline().rstrip()
 PASSWORD = file.readline().rstrip()
 KEY = file.readline().rstrip()
+CSCA08 = file.readline().rstrip()
+CSCA67 = file.readline().rstrip()
 file.close()
-
-CSCA08 = 'https://markus.utsc.utoronto.ca/csca08f18'
-CSCA67 = 'https://markus.utsc.utoronto.ca/csca67f18'
 
 def decode(key, string):
     encoded_chars = []
@@ -22,8 +21,10 @@ def decode(key, string):
     encoded_string = ''.join(encoded_chars)
     return encoded_string
 
-browser = webdriver.Firefox()
-browser.get((CSCA08))
+options = Options()
+options.headless = True
+browser = webdriver.Firefox(options=options)
+browser.get(CSCA08)
 
 username_field = WebDriverWait(browser, 20).until(EC.presence_of_element_located((By.ID, 'user_login')))
 username_field.send_keys(decode(KEY, USERNAME))
@@ -35,5 +36,6 @@ next_button.click()
 
 result_box = browser.find_element_by_xpath('//*[@id="content"]/div[7]/div/table/tbody/tr[last()]/td[3]')
 print(result_box.text)
+webdriver.quit()
 #if result_box.text != 'No marks are available yet.':
 #    print(result_box.text)
