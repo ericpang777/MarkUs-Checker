@@ -5,6 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.options import Options
 from win10toast import ToastNotifier
 import time
+from datetime import datetime
 import traceback
 
 file = open('config.txt', 'r', encoding='utf-8')
@@ -36,14 +37,17 @@ def get_class(class_url):
     next_button.click()
 
     result_box = browser.find_element_by_xpath('//*[@id="content"]/div[7]/div/table/tbody/tr[last()]/td[3]')
+    print(datetime.now().strftime("%a, %d %B %Y %H:%M:%S"))
     if result_box.text != 'No marks are available yet.':
         toaster.show_toast('MarkUs ' + class_url[-9:-3].upper(), 'Mark Updated')
         global updated_mark
         updated_mark = True
-        print(result_box.text)
+        print('MarkUs ' + class_url[-9:-3].upper(), 'Mark Updated')
+        print(result_box.text + '\n')
     else:
         toaster.show_toast('MarkUs ' + class_url[-9:-3].upper(), 'No Update')
-        print(result_box.text)
+        print('MarkUs ' + class_url[-9:-3].upper(), 'No update')
+        print(result_box.text + '\n')
 
 toaster = ToastNotifier()
 options = Options()
