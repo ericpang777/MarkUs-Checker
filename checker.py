@@ -17,6 +17,7 @@ CSCA67 = file.readline().rstrip()
 file.close()
 
 
+# Didn't want to store username, password in plain text
 def decode(key, string):
     encoded_chars = []
     for i in range(len(string)):
@@ -38,9 +39,17 @@ def get_class(class_url):
     password_field.send_keys(decode(KEY, PASSWORD))
     next_button = browser.find_element_by_name('commit')
     next_button.click()
+    if class_url == CSCA08:
+        result_box = browser.find_element_by_xpath('//*[@id="content"]/div[7]/div/table/tbody/tr[last()]/td[3]')
+    else: # CSCA67 for now
+        result_box = browser.find_element_by_xpath('//*[@id="content"]/div[7]/div/table/tbody/tr[5]/td[3]')
 
-    result_box = browser.find_element_by_xpath('//*[@id="content"]/div[7]/div/table/tbody/tr[last()]/td[3]')
     print(datetime.now().strftime("%a, %d %B %Y %H:%M:%S"))
+    get_mark(result_box, class_url)
+    browser.quit()
+    
+    
+def get_mark(result_box, class_url):
     if result_box.text != 'No marks are available yet.':
         toaster.show_toast('MarkUs ' + class_url[-9:-3].upper(), 'Mark Updated')
         global updated_mark
@@ -50,8 +59,7 @@ def get_class(class_url):
     else:
         toaster.show_toast('MarkUs ' + class_url[-9:-3].upper(), 'No Update')
         print('MarkUs ' + class_url[-9:-3].upper(), 'No update')
-        print(result_box.text + '\n')
-    browser.quit()
+        print(result_box.text + '\n')    
 
 
 toaster = ToastNotifier()
@@ -61,7 +69,7 @@ updated_mark = False
 
 try:
     while not updated_mark:
-        get_class(CSCA08)
+        #get_class(CSCA08)
         get_class(CSCA67)
         time.sleep(1500)
 except Exception as e:
